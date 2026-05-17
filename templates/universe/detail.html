@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ obj.name }} - Cosmopedia{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'universe:index' %}"
+        class="text-cosmic-accent hover:text-cosmic-accent_hover transition-colors flex items-center w-max">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+                d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+                clip-rule="evenodd" />
+        </svg>
+        Back to Objects
+    </a>
+</div>
+
+<!-- Hero Section -->
+<div
+    class="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden mb-12 shadow-2xl border border-cosmic-accent/20">
+    {% if obj.image %}
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ obj.image.url }}');"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-cosmic-900 via-cosmic-900/60 to-transparent"></div>
+    {% else %}
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-cosmic-800 to-cosmic-900"></div>
+    <div
+        class="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent">
+    </div>
+    {% endif %}
+
+    <div class="absolute bottom-0 left-0 p-8 w-full">
+        <span
+            class="inline-block bg-cosmic-accent/20 border border-cosmic-accent text-cosmic-accent font-semibold px-3 py-1 rounded-full uppercase tracking-widest text-xs mb-3 backdrop-blur-sm">
+            {{ obj.object_type.name }}
+        </span>
+        <h1 class="text-5xl md:text-6xl font-extrabold text-white tracking-tight mb-2 drop-shadow-lg">{{ obj.name }}
+        </h1>
+        {% if obj.discovered_by %}
+        <p class="text-cosmic-100/80 text-lg flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-cosmic-accent" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd" />
+            </svg>
+            Discovered by {{ obj.discovered_by }} {% if obj.discovery_date %}({{ obj.discovery_date }}){% endif %}
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+    <!-- Main Content (Left Column) -->
+    <div class="lg:col-span-2 space-y-8">
+        <section class="bg-cosmic-800 rounded-2xl p-8 shadow-lg border border-cosmic-accent/10">
+            <h2 class="text-2xl font-bold text-white mb-4 border-b border-cosmic-accent/20 pb-2">Overview</h2>
+            <div class="prose prose-invert prose-cosmic max-w-none">
+                <p class="text-lg text-cosmic-100 leading-relaxed mb-6">{{
+                    obj.full_description|linebreaksbr|default:obj.short_description }}</p>
+
+                {% if obj.formation %}
+                <h3 class="text-xl font-semibold text-white mt-8 mb-3">Formation & Age</h3>
+                <p class="text-cosmic-100 bg-cosmic-900/50 p-4 rounded-lg border-l-4 border-blue-500">{{ obj.formation
+                    }}</p>
+                {% endif %}
+            </div>
+        </section>
+
+        {% if obj.scientific_fact %}
+        <section
+            class="bg-gradient-to-r from-cosmic-800 to-indigo-900/30 rounded-2xl p-8 shadow-lg border border-indigo-500/30 relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 text-indigo-500/10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-indigo-300 mb-4 flex items-center relative z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                Fascinating Fact
+            </h2>
+            <p class="text-lg text-cosmic-100 italic relative z-10">"{{ obj.scientific_fact }}"</p>
+        </section>
+        {% endif %}
+    </div>
+
+    <!-- Scientific Dashboard (Right Column) -->
+    <div class="space-y-8">
+        <div class="bg-cosmic-800 rounded-2xl shadow-lg border border-cosmic-accent/10 overflow-hidden">
+            <div class="bg-cosmic-900/80 p-4 border-b border-cosmic-accent/20">
+                <h3 class="text-lg font-bold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-cosmic-accent" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Scientific Data
+                </h3>
+            </div>
+            <div class="p-6 space-y-6">
+                {% if obj.diameter_km %}
+                <div>
+                    <p class="text-sm text-cosmic-100/60 uppercase tracking-wider mb-1">Diameter</p>
+                    <p class="text-2xl font-mono text-white">{{ obj.diameter_km|floatformat:"0" }} <span
+                            class="text-sm text-cosmic-accent">km</span></p>
+                </div>
+                {% endif %}
+
+                {% if obj.mass %}
+                <div>
+                    <p class="text-sm text-cosmic-100/60 uppercase tracking-wider mb-1">Mass</p>
+                    <p class="text-xl font-mono text-white">{{ obj.mass }}</p>
+                </div>
+                {% endif %}
+
+                {% if obj.distance_from_earth %}
+                <div>
+                    <p class="text-sm text-cosmic-100/60 uppercase tracking-wider mb-1">Distance from Earth</p>
+                    <p class="text-xl font-mono text-white">{{ obj.distance_from_earth }}</p>
+                    <!-- Visual progress bar representation -->
+                    <div class="w-full bg-cosmic-900 rounded-full h-1.5 mt-2 overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-500 to-cosmic-accent h-1.5 rounded-full"
+                            style="width: 75%"></div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if obj.comparison_to_earth %}
+        <div class="bg-blue-900/20 rounded-2xl shadow-lg border border-blue-500/20 p-6">
+            <h3 class="text-lg font-bold text-blue-400 mb-3 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Earth Comparison
+            </h3>
+            <p class="text-cosmic-100 text-sm leading-relaxed">{{ obj.comparison_to_earth }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Related Objects Section -->
+{% if related_objects %}
+<div class="mt-16 pt-8 border-t border-cosmic-accent/20">
+    <h2 class="text-2xl font-bold text-white mb-6">Explore Other {{ obj.object_type.name }}s</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for related in related_objects %}
+        <a href="{% url 'universe:detail' related.slug %}"
+            class="group block bg-cosmic-800 rounded-xl overflow-hidden shadow-md border border-cosmic-accent/10 hover:border-cosmic-accent transition-all duration-300">
+            {% if related.image %}
+            <div class="h-32 w-full overflow-hidden">
+                <img src="{{ related.image.url }}" alt="{{ related.name }}"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            </div>
+            {% else %}
+            <div class="h-32 w-full bg-cosmic-900 flex items-center justify-center">
+                <span class="text-cosmic-100/30 text-sm">No Image</span>
+            </div>
+            {% endif %}
+            <div class="p-4">
+                <h4 class="text-lg font-bold text-white group-hover:text-cosmic-accent transition-colors">{{
+                    related.name }}</h4>
+                <p class="text-xs text-cosmic-100/70 mt-1 line-clamp-2">{{ related.short_description }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

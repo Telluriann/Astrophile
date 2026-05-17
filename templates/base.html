@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cosmopedia{% endblock %}</title>
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cosmic: {
+                            900: '#0b0c10',
+                            800: '#1f2833',
+                            100: '#c5c6c7',
+                            accent: '#66fcf1',
+                            accent_hover: '#45a29e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-balance {
+                text-wrap: balance;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-cosmic-900 text-cosmic-100 font-sans min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-cosmic-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0">
+                    <a href="{% url 'universe:index' %}" class="text-cosmic-accent font-bold text-xl tracking-wider hover:text-cosmic-accent_hover transition-colors">🌌 Cosmopedia</a>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="{% url 'universe:index' %}" class="text-cosmic-accent hover:text-cosmic-accent_hover transition-colors font-medium">Home</a>
+                    <a href="/admin/" class="text-cosmic-accent hover:text-cosmic-accent_hover transition-colors font-medium">Admin</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-cosmic-800 py-6 text-center mt-auto">
+        <p class="text-cosmic-100/70 text-sm">&copy; 2026 Cosmopedia Platform</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

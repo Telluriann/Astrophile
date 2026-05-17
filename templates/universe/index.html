@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore the Cosmos - Cosmopedia{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center py-12 mb-8 bg-cosmic-800 rounded-2xl shadow-lg border border-cosmic-accent/20">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4 text-balance">
+        Explore the <span class="text-transparent bg-clip-text bg-gradient-to-r from-cosmic-accent to-blue-400">Cosmos</span>
+    </h1>
+    <p class="text-lg md:text-xl text-cosmic-100 max-w-2xl mx-auto px-4 text-balance">
+        Your ultimate educational journey through the observable universe.
+    </p>
+</div>
+
+<!-- Controls Section (Search & Filter) -->
+<div class="bg-cosmic-800 p-4 rounded-xl shadow-md border border-cosmic-accent/10 mb-8">
+    <form method="get" action="{% url 'universe:index' %}" class="flex flex-col md:flex-row gap-4">
+        <div class="flex-grow">
+            <label for="search" class="sr-only">Search</label>
+            <input type="text" name="q" id="search" value="{{ search_query }}" placeholder="Search objects, names, facts..." class="w-full bg-cosmic-900 border border-cosmic-accent/30 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cosmic-accent focus:border-transparent transition-all">
+        </div>
+        <div class="w-full md:w-64">
+            <label for="category" class="sr-only">Category</label>
+            <select name="category" id="category" class="w-full bg-cosmic-900 border border-cosmic-accent/30 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cosmic-accent focus:border-transparent transition-all appearance-none">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if current_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="bg-cosmic-accent hover:bg-cosmic-accent_hover text-cosmic-900 font-bold py-2 px-6 rounded-lg transition-colors whitespace-nowrap">
+            Search
+        </button>
+        {% if search_query or current_category %}
+        <a href="{% url 'universe:index' %}" class="flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition-colors whitespace-nowrap">
+            Clear
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Objects Grid -->
+<div class="mb-8">
+    <h2 class="text-2xl font-bold text-white mb-6 border-b border-cosmic-accent/30 pb-2">Astronomical Objects</h2>
+    
+    {% if page_obj %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for obj in page_obj %}
+        <div class="bg-cosmic-800 rounded-xl overflow-hidden shadow-lg border border-cosmic-accent/10 hover:border-cosmic-accent/50 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
+            <a href="{% url 'universe:detail' obj.slug %}" class="block">
+                {% if obj.image %}
+                <div class="h-48 w-full overflow-hidden">
+                    <img src="{{ obj.image.url }}" alt="{{ obj.name }}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                </div>
+                {% else %}
+                <div class="h-48 w-full bg-cosmic-900 flex items-center justify-center border-b border-cosmic-accent/10">
+                    <span class="text-cosmic-100/50">No Image Available</span>
+                </div>
+                {% endif %}
+            </a>
+            
+            <div class="p-5 flex flex-col flex-grow">
+                <div class="flex justify-between items-start mb-2">
+                    <a href="{% url 'universe:detail' obj.slug %}" class="hover:text-cosmic-accent transition-colors">
+                        <h3 class="text-xl font-bold text-white">{{ obj.name }}</h3>
+                    </a>
+                    <span class="inline-block bg-cosmic-900 border border-cosmic-accent text-cosmic-accent text-xs px-2 py-1 rounded-full whitespace-nowrap ml-2">
+                        {{ obj.object_type.name }}
+                    </span>
+                </div>
+                
+                <p class="text-cosmic-100 text-sm mb-4 line-clamp-3 flex-grow">
+                    {{ obj.short_description|default:obj.full_description|truncatewords:20 }}
+                </p>
+                
+                <div class="space-y-1 text-xs text-cosmic-100/70 mt-auto pt-4 border-t border-cosmic-accent/10">
+                    {% if obj.distance_from_earth %}
+                    <p class="flex justify-between"><span>Distance:</span> <span class="font-medium text-cosmic-100">{{ obj.distance_from_earth }}</span></p>
+                    {% endif %}
+                    {% if obj.mass %}
+                    <p class="flex justify-between"><span>Mass:</span> <span class="font-medium text-cosmic-100">{{ obj.mass }}</span></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-cosmic-800 rounded-xl p-8 text-center border border-cosmic-accent/10">
+        <p class="text-xl text-cosmic-100">No objects found matching your criteria.</p>
+        <a href="{% url 'universe:index' %}" class="inline-block mt-4 text-cosmic-accent hover:underline">View all objects</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<div class="flex justify-center mt-8">
+    <nav class="inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-cosmic-accent/30 bg-cosmic-800 text-sm font-medium text-cosmic-100 hover:bg-cosmic-900">
+            <span class="sr-only">Previous</span>
+            <!-- Heroicon name: solid/chevron-left -->
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="relative inline-flex items-center px-4 py-2 border border-cosmic-accent bg-cosmic-accent text-sm font-medium text-cosmic-900">
+                {{ num }}
+            </span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-cosmic-accent/30 bg-cosmic-800 text-sm font-medium text-cosmic-100 hover:bg-cosmic-900">
+                {{ num }}
+            </a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-cosmic-accent/30 bg-cosmic-800 text-sm font-medium text-cosmic-100 hover:bg-cosmic-900">
+            <span class="sr-only">Next</span>
+            <!-- Heroicon name: solid/chevron-right -->
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+        </a>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}
+{% endblock %}
